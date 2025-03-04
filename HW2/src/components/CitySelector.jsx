@@ -4,6 +4,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import city_weather from "../assets/json/city_weather.json"
 
 function CitySelector(props) {
     
@@ -13,7 +14,7 @@ function CitySelector(props) {
         props.onCityChange(event.target.value);
     };
 
-    const cityList = ["北京", "上海", "广州", "杭州", "深圳"];
+    const cityList = Object.keys(city_weather);
 
     const [selectedCity, setSelectedCity] = useState(props.city);
 
