@@ -98,3 +98,15 @@
     transform: scale(1.02);
     transition: transform 0.2s ease-in-out;
 }
+
+#submit_button {
+    transition: transform 0.2s ease-in-out;
+}
+
+#weather-container:hover {
+    transform: scale(1.02);
+}
+
+#weather-container {
+    transition: transform 0.2s ease-in-out;
+}

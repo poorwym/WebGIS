@@ -5,7 +5,7 @@ function App() {
   const [showWeather, setShowWeather] = useState(false);
   return (
     <>
-      <div className="w-full h-screen">
+      <div className="w-full h-screen bg-sky-200">
         <div className="flex flex-row items-center justify-center">
           <Button variant="contained" 
           color="primary" 

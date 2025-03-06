@@ -71,6 +71,7 @@ function Weather() {
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
+            id="weather-container"
         >
             <div className='w-full flex flex-row items-center justify-between pr-4'>
                 <CitySelector city={city} onCityChange={onCityChange}/>

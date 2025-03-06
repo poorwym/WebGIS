@@ -11,7 +11,7 @@
 
 ## HW2一些知识点
 
-1. 怎么让子组件修改父组件的state
+### 1. 怎么让子组件修改父组件的state
 
 react中可以把setState对象在props中传递给子组件。
 
@@ -42,7 +42,7 @@ function Parent() {
 export default Parent;
 ```
 
-2. 关于请求
+### 2. 关于请求
 
 貌似基于jquery的请求已经过时了，更加先进的可以用fetch函数
 
@@ -66,9 +66,123 @@ async function fetchData() {
 fetchData();
 ```
 
-3. 关于一些语法糖
+### 3. 关于一些语法糖
 
 showWeather 为true就渲染Weather.
 ```jsx
 {showWeather && <Weather />}
 ```
+
+### 4. Promise, asynic 和 await关键字
+
+#### Promise
+Promise 机制本身是一种异步操作，但是 javascript 设计上就是单线程的，所以本质是在等待某个结果返回前在线程中继续运行别的代码而不是传统的线性运行。
+
+Promise：
+Promise 本质是一种对象，主要由 执行器函数（executor function）、状态（state） 和 回调队列（callback queue） 组成。
+- 1. 执行器函数（executor function）
+    - Promise 构造函数接受一个 执行器函数，该函数包含 resolve 和 reject 两个回调函数，分别用于改变 Promise 的状态。
+    - executor 立即执行，不能异步执行。
+
+- 2. 状态（state）
+
+  - pending（进行中）：初始状态，既没有成功也没有失败。
+  - fulfilled（已成功）：异步操作成功，调用 resolve(value) 进入此状态，并返回 value 作为最终结果。
+  - rejected（已失败）：异步操作失败，调用 reject(error) 进入此状态，并返回 error 作为最终原因。
+
+- 3. 回调队列（callback queue）
+  - 由于 Promise 是异步的，它不会立刻返回结果，而是将回调函数存入队列，等到 resolve 或 reject 触发后，再执行对应的 .then() 或 .catch() 代码。
+
+所以promise可以异步执行多个操作：
+```javascript
+myPromise
+    .then(result => console.log("成功:", result))
+    .catch(error => console.log("失败:", error))
+    .finally(() => console.log("执行完毕"));
+```
+
+多个异步任务需要按顺序执行时，可以使用**链式调用**：
+```javascript
+new Promise((resolve, reject) => {
+    setTimeout(() => resolve(1), 1000);
+})
+    .then(result => {
+        console.log(result); // 1
+        return result * 2;
+    })
+    .then(result => {
+        console.log(result); // 2
+        return result * 3;
+    })
+    .then(result => {
+        console.log(result); // 6
+    });
+```
+
+### Promise.all、Promise.race 和 Promise.allSettled
+
+- Promise.all([p1, p2, p3])
+  - 等待所有 Promise 完成，返回所有成功结果（如果有一个失败，就返回失败）。
+```javascript
+Promise.all([
+    fetch("https://jsonplaceholder.typicode.com/posts/1"),
+    fetch("https://jsonplaceholder.typicode.com/posts/2")
+])
+.then(responses => Promise.all(responses.map(res => res.json())))
+.then(data => console.log(data))
+.catch(error => console.error(error));
+```
+
+- Promise.race([p1, p2, p3])
+  - 只返回最先完成的 Promise（无论成功还是失败）。
+
+```javascript
+Promise.race([
+    new Promise(resolve => setTimeout(() => resolve("A"), 1000)),
+    new Promise(resolve => setTimeout(() => resolve("B"), 500))
+])
+.then(result => console.log(result)); // B
+```
+
+- Promise.allSettled([p1, p2, p3])
+  - 等待所有 Promise 完成，无论成功或失败，返回所有结果（不会因某个 Promise 失败而中断）。
+
+```javascript
+Promise.allSettled([
+    Promise.resolve("成功"),
+    Promise.reject("失败"),
+])
+.then(results => console.log(results));
+```
+
+#### async 和 await
+
+本质就是promise的语法糖
+await关键字只能在声明了async的函数中使用。
+
+```javascript
+async function fetchData() {
+    try {
+        let response = await fetch("https://jsonplaceholder.typicode.com/posts/1");
+        let data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+fetchData();
+```
+
+相当于
+
+```javascript
+new Promise(fetch("https://jsonplaceholder.typicode.com/posts/1"))
+  .then(response => response.json())
+  .catch(error => {console.log(error)})
+;
+```
+
+`async`中不同的`await`间是链式执行的，不是同步并发的，如果要并发，得使用`Promise.all`
+
+---

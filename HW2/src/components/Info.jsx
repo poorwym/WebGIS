@@ -2,7 +2,7 @@ import React from 'react'
 
 function Info(props) {
   return (
-    <div className="w-full flex flex-row items-center justify-between my-2 Surface-Secondary rounded-md shadow-md px-4 py-2">
+    <div className="w-full flex flex-row items-center justify-between my-2 Surface-Secondary rounded-md shadow-md px-4 py-2" id="info-container">
         <div className="w-1/2 flex flex-row items-center justify-between mx-2">
             <img src={props.icon} alt="weather icon" />
             <div className="flex flex-col items-start justify-between mx-2">
