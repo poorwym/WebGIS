@@ -8,7 +8,7 @@ function LightSwitch({option, setOption}) {
   return (
     <div>
       <FormGroup>
-        <FormControlLabel control={<Switch defaultChecked={option.lighting} onChange={(e) => setOption({...option, lighting: e.target.checked})} />} label="Lighting" />
+        <FormControlLabel control={<Switch checked={option.lighting} onChange={(e) => setOption({...option, lighting: e.target.checked})} />} label="Lighting" />
         </FormGroup>
     </div>
   )

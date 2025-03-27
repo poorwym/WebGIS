@@ -7,7 +7,7 @@ function WaterMaskSwitch({option, setOption}) {
   return (
     <div>
       <FormGroup>
-        <FormControlLabel control={<Switch defaultChecked={option.waterMask} onChange={(e) => setOption({...option, waterMask: e.target.checked})} />} label="Water Mask" />
+        <FormControlLabel control={<Switch checked={option.waterMask} onChange={(e) => setOption({...option, waterMask: e.target.checked})} />} label="Water Mask" />
       </FormGroup>
     </div>
   )

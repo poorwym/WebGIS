@@ -41,6 +41,7 @@ function CesiumContainer({ imageProvider, terrainProvider, lighting, waterMask }
     
     // 设置光照
     viewer.scene.globe.enableLighting = lighting;
+    console.log("设置光照：", lighting);
     
     // 设置水体效果，无论terrain是否已加载
     viewer.scene.globe.showWaterEffect = waterMask;

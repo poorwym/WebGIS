@@ -44,7 +44,7 @@ function App() {
     
     try {
       if(value === 'ArcGIS_Image'){
-        console.log("创建ArcGIS_Image:", value);
+        console.log("创建ArcGIS_ImageProvider:", value);
         const imageryProvider = await Cesium.ArcGisMapServerImageryProvider.fromUrl(
           'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer'
         );
