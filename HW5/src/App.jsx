@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import * as Cesium from 'cesium'
 import './assets/styles.css'
 import { image_provider_source } from './data/image_provider_source'
-import { terrain_provider_source } from './data/terrain_provider_source'
 import LightSwitch from './components/LightSwitch'
 import WaterMaskSwitch from './components/WaterMaskSwitch'
 import ImagerProviderSelector from './components/ImagerProviderSelector'
@@ -45,6 +44,7 @@ function App() {
     
     try {
       if(value === 'ArcGIS_Image'){
+        console.log("创建ArcGIS_Image:", value);
         const imageryProvider = await Cesium.ArcGisMapServerImageryProvider.fromUrl(
           'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer'
         );
@@ -72,12 +72,11 @@ function App() {
     console.log("setTerrainProvider: ",value);
     setOption({...option, terrainProvider: value});
     try {
-      if(value === '天地图地形'){
-        setTerrainProvider(new Cesium.Terrain(Cesium.CesiumTerrainProvider.fromIonAssetId(1)));
-      }
-      else if(value === 'CesiumTerrainProvider'){
-        setTerrainProvider(new Cesium.Terrain(Cesium.CesiumTerrainProvider.fromIonAssetId(1)));
-      }
+        const terrainProvider = await Cesium.createWorldTerrainAsync({
+          requestWaterMask: option.waterMask
+        });
+        const terrain = new Cesium.Terrain(terrainProvider);
+        setTerrainProvider(terrain);
     } catch (error) {
       console.error("创建地形提供者时出错:", error);
     }
@@ -89,6 +88,10 @@ function App() {
     console.log("option: ",option);
   }, [option.imageryProvider, option.terrainProvider]);
 
+  // 监听waterMask变化，更新地形提供者
+  useEffect(() => {
+    handleTerrainProviderChange(option.terrainProvider);
+  }, [option.waterMask]);
 
   return (
     <>
@@ -98,7 +101,7 @@ function App() {
         <ImagerProviderSelector option={option} setOption={setOption} />
         <TerrainProviderSelector option={option} setOption={setOption} />
       </div>
-      <CesiumContainer imageProvider={imageProvider} terrainProvider={terrainProvider} watermask={option.waterMask} lighting={option.lighting}/>
+      <CesiumContainer imageProvider={imageProvider} terrainProvider={terrainProvider} waterMask={option.waterMask} lighting={option.lighting}/>
     </>
   )
 }

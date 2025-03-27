@@ -42,13 +42,15 @@ function CesiumContainer({ imageProvider, terrainProvider, lighting, waterMask }
     // 设置光照
     viewer.scene.globe.enableLighting = lighting;
     
+    // 设置水体效果，无论terrain是否已加载
+    viewer.scene.globe.showWaterEffect = waterMask;
+    console.log("设置水体效果：", waterMask);
+    
     // 只有当terrainProvider存在时才设置地形
     if (terrainProvider) {
       try {
         console.log("设置地形提供者:", terrainProvider);
         viewer.scene.setTerrain(terrainProvider);
-        // 配置水面掩码
-        viewer.scene.globe.showWaterEffect = waterMask;
       } catch (error) {
         console.error("设置地形提供者时出错:", error);
       }
@@ -70,7 +72,7 @@ function CesiumContainer({ imageProvider, terrainProvider, lighting, waterMask }
   }, [viewer, imageProvider]);
 
   return (
-    <div id="cesiumContainer" style={{ width: '100%', height: '100vh' }}></div>
+    <div id="cesiumContainer" className='w-full h-full'></div>
   );
 }
 
