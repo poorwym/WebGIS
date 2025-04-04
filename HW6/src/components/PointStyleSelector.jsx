@@ -23,7 +23,7 @@ function valuetext(value) {
 }
 
 function PointStyleSelector( {pointStyle, setPointStyle} ) {
-    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [position, setPosition] = useState({ x: 1000, y: 100 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 

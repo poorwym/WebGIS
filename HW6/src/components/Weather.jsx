@@ -15,7 +15,7 @@ import cityList from "../assets/json/cityList.json"
 import weather_ch_to_en from "../assets/json/weather_ch_to_en.json"
 
 function Weather( {city, setCity} ) {
-    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [position, setPosition] = useState({ x: 0, y: 100 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const { weatherData, error, getWeather } = useWeather();

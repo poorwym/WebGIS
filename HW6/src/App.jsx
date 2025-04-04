@@ -31,7 +31,7 @@ function App() {
   const [option, setOption] = useState({
     waterMask: true,
     lighting: false,
-    imageryProvider: '天地图矢量',
+    imageryProvider: 'ArcGIS_Image',
     terrainProvider: 'CesiumTerrainProvider'
   });
 
