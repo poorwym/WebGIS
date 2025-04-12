@@ -1,0 +1,14 @@
+{
+    "sunny":{
+        "image_path":"pictures/sunny.png"
+    },
+    "cloudy":{
+        "image_path":"pictures/cloudy.png"
+    },
+    "rainy":{
+        "image_path":"pictures/rainny.png"
+    },
+    "other_weather":{
+        "image_path":"pictures/otherweather.png"
+    }
+}
