@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+#cesiumContainer {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* color styles*/
+.Brand-Primary {
+    color: #000000;
+}
+
+.Brand-Secondary {
+    color: #000000;
+}
+
+.Text-Invert {
+    color: #ffffff;
+}
+
+.Text-Primary {
+    color: #F8FAF2;
+}
+
+.Text-Secondary {
+    color: #dce1cd;
+}
+
+.Surface-Primary {
+    background-color: #6880AE;
+}
+
+.Surface-Secondary {
+    background-color: #7D96C1;
+}
+
+#city-selector {
+    background-color: #7D96C1;
+    color: #F8FAF2;
+  }
+
+#city-selector:hover {
+    background-color: #c6d1e8;
+    transform: scale(1.02);
+    transition: transform 0.2s ease-in-out;
+}
+
+
+/* font styles*/
+.Font-Primary {
+    font-family: 'Arial', sans-serif;
+    font-size: 24px;
+    line-height: calc(24px * 1.2);
+}
+
+.Font-Secondary {
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    line-height: calc(16px * 1.2);
+}
+
+.Font-H1 {
+    font-family: 'Arial', sans-serif;
+    font-size: 32px;
+    line-height: calc(32px * 1.2);
+    font-weight: bold;
+}
+
+.Font-H2 {
+    font-family: 'Arial', sans-serif;
+    font-size: 24px;
+    line-height: calc(24px * 1.2);
+    font-weight: bold;
+}
+
+.Font-Title {
+    font-family: 'Arial', sans-serif;
+    font-size: 24px;
+    line-height: calc(24px * 1.2);
+    font-weight: bold;
+}
+
+.Font-Subtitle {
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    line-height: calc(16px * 1.2);
+    font-weight: 500;
+}
+
+.Font-Body {
+    font-family: 'Arial', sans-serif;
+    font-size: 12px;
+    line-height: calc(12px * 1.2);
+}
+
+.Font-Caption {
+    font-family: 'Arial', sans-serif;
+    font-size: 10px;
+    line-height: calc(10px * 1.2);
+}
+
+#submit_button:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s ease-in-out;
+}
+
+#submit_button {
+    transition: transform 0.2s ease-in-out;
+}
+
+#weather-container:hover {
+    transform: scale(1.02);
+}
+
+#weather-container {
+    transition: transform 0.2s ease-in-out;
+    z-index: 1;
+}
+
+#point-style-selector {
+    transition: transform 0.2s ease-in-out;
+    z-index: 1;
+}
+
+#bookmarks-selector {
+    transition: transform 0.2s ease-in-out;
+    z-index: 1;
+}
