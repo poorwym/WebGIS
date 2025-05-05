@@ -16,6 +16,9 @@ node_modules
 
 *.7z
 
+
+*.7z
+
 *.tar
 
 cesiumApp/
