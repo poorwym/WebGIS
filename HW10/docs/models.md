@@ -33,6 +33,38 @@ class UserCreate(User):
     pass
 ```
 
+### SuccessResponse（成功响应模型）
+
+用于API操作成功时的响应。
+
+```python
+class SuccessResponse(BaseModel):
+    success: bool = Field(True, description="操作是否成功")
+    message: str = Field(..., description="详细信息")
+    status_code: int = Field(201, description="状态码")
+```
+
+**字段说明**:
+- `success`: 布尔值，表示操作是否成功，默认为True
+- `message`: 字符串，操作结果的消息说明
+- `status_code`: 整数，HTTP状态码，默认为201（创建成功）
+
+### UpdateResponse（更新响应模型）
+
+用于用户更新操作的响应，包含更新后的用户信息。
+
+```python
+class UpdateResponse(BaseModel):
+    success: bool = Field(True, description="操作是否成功")
+    message: str = Field(..., description="详细信息")
+    user: Optional['UserResponse'] = Field(None, description="更新后的用户信息")
+```
+
+**字段说明**:
+- `success`: 布尔值，表示操作是否成功，默认为True
+- `message`: 字符串，操作结果的消息说明
+- `user`: 可选的UserResponse对象，包含更新后的用户信息
+
 ### UserUpdate（用户更新模型）
 
 用于更新用户信息，所有字段均为可选。

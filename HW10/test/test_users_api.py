@@ -7,7 +7,7 @@ from unittest.mock import patch
 # 确保能够导入服务模块
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from service import user_service
-from schemas.user import UserCreate, UserResponse
+from schemas.user import UserCreate, UserResponse, UpdateResponse, SuccessResponse
 
 @pytest.mark.parametrize("offset,limit,min_age,max_age,expected_status", [
     (0, 10, 0, 100, 200),  # 正常情况
@@ -33,10 +33,10 @@ def test_register_user(client):
     }
     
     # 模拟用户服务
-    with patch.object(user_service, "register_user", return_value={"status_code": 201, "detail": "用户创建成功"}):
+    with patch.object(user_service, "register_user", return_value={"success": True, "message": "用户创建成功", "status_code": 201}):
         response = client.post("/users/", json=valid_user)
         assert response.status_code == 201
-        assert response.json() == {"status_code": 201, "detail": "用户创建成功"}
+        assert response.json() == {"success": True, "message": "用户创建成功", "status_code": 201}
 
 def test_register_user_invalid_data(client):
     """测试用户注册API的输入验证"""
@@ -100,19 +100,36 @@ def test_update_user(client):
         "age": 26
     }
     
+    mock_response = {
+        "success": True,
+        "message": "用户更新成功",
+        "user": {
+            "username": "testuser",
+            "email": "updated@example.com",
+            "age": 26
+        }
+    }
+    
     # 模拟用户服务
-    with patch.object(user_service, "update_user", return_value={"message": "用户更新成功"}):
+    with patch.object(user_service, "update_user", return_value=mock_response):
         response = client.put("/users/testuser", json=update_data)
         assert response.status_code == 200
-        assert response.json() == {"message": "用户更新成功"}
+        assert response.json() == mock_response
 
 def test_delete_user(client):
     """测试删除用户API"""
     # 模拟用户服务
-    with patch.object(user_service, "delete_user", return_value={"message": "用户删除成功"}):
+    mock_response = {
+        "success": True,
+        "message": "用户删除成功",
+        "status_code": 200
+    }
+    
+    # 模拟用户服务
+    with patch.object(user_service, "delete_user", return_value=mock_response):
         response = client.delete("/users/testuser")
         assert response.status_code == 200
-        assert response.json() == {"message": "用户删除成功"}
+        assert response.json() == mock_response
 
 def test_register_user_validation_details(client):
     """测试用户注册API的Pydantic具体验证错误详情"""

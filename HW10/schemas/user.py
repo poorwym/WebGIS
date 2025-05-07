@@ -19,6 +19,16 @@ class User(BaseModel):
 class UserCreate(User):
     pass
 
+class SuccessResponse(BaseModel):
+    success: bool = Field(True, description="操作是否成功")
+    message: str = Field(..., description="详细信息")
+    status_code: int = Field(201, description="状态码")
+
+class UpdateResponse(BaseModel):
+    success: bool = Field(True, description="操作是否成功")
+    message: str = Field(..., description="详细信息")
+    user: Optional['UserResponse'] = Field(None, description="更新后的用户信息")
+
 class UserUpdate(BaseModel):
     password: Optional[str] = None
     email: Optional[EmailStr] = None

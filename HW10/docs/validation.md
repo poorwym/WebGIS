@@ -28,6 +28,16 @@
 - 取值范围：0 到 100
 - 必填字段
 
+### 响应模型 (SuccessResponse)
+- `success`：布尔值，默认为 True
+- `message`：字符串，不能为空
+- `status_code`：整数，默认为 201
+
+### 更新响应模型 (UpdateResponse)
+- `success`：布尔值，默认为 True
+- `message`：字符串，不能为空
+- `user`：可选的 UserResponse 对象，默认为 None
+
 ## 错误处理机制
 
 系统使用 FastAPI 的 HTTPException 来处理数据验证错误，主要处理以下几类错误：

@@ -11,7 +11,7 @@ from pydantic import ValidationError
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import service.user_service as user_service
-from schemas.user import UserCreate, UserUpdate, UserResponse
+from schemas.user import UserCreate, UserUpdate, UserResponse, UpdateResponse
 
 @pytest.fixture
 def mock_user_data():
@@ -55,8 +55,9 @@ def test_register_user():
         result = user_service.register_user(new_user)
     
     # 验证结果
-    assert result["status_code"] == 201
-    assert result["detail"] == "用户创建成功"
+    assert result.success is True
+    assert result.message == "用户创建成功"
+    assert result.status_code == 201
     
     # 验证用户被添加到列表中
     assert len(user_service.users) == 1
@@ -116,7 +117,11 @@ def test_update_user():
         result = user_service.update_user("testuser1", update_data)
     
     # 验证结果
-    assert result["message"] == "用户更新成功"
+    assert result.success is True
+    assert result.message == "用户更新成功"
+    assert result.user.username == "testuser1"
+    assert result.user.email == "updated@example.com"
+    assert result.user.age == 26
     
     # 验证用户信息被更新
     updated_user = user_service.users[0]
@@ -140,7 +145,9 @@ def test_delete_user():
         result = user_service.delete_user("testuser1")
     
     # 验证结果
-    assert result["message"] == "用户删除成功"
+    assert result.success is True
+    assert result.message == "用户删除成功"
+    assert result.status_code == 200
     
     # 验证用户被删除
     assert len(user_service.users) == 0
@@ -259,4 +266,154 @@ def test_pydantic_validation_error_handling():
             user_service.register_user(test_user)
         
         assert exc_info.value.status_code == 422
-        assert "模拟的验证错误" in str(exc_info.value.detail) 
+        assert "模拟的验证错误" in str(exc_info.value.detail)
+
+def test_register_duplicate_user():
+    """测试注册已存在的用户名"""
+    # 清空用户列表并添加一个用户
+    user_service.users = [
+        user_service.User(
+            username="existinguser",
+            password="Password123",
+            email="existing@example.com",
+            age=30
+        )
+    ]
+    
+    # 尝试注册同名用户
+    duplicate_user = UserCreate(
+        username="existinguser",
+        password="Password456",
+        email="new@example.com",
+        age=25
+    )
+    
+    with pytest.raises(HTTPException) as exc_info:
+        user_service.register_user(duplicate_user)
+    
+    assert exc_info.value.status_code == 400
+    assert "用户名已存在" in str(exc_info.value.detail)
+
+def test_update_nonexistent_user():
+    """测试更新不存在的用户"""
+    # 清空用户列表
+    user_service.users = []
+    
+    update_data = UserUpdate(
+        password="NewPassword123",
+        email="updated@example.com",
+        age=26
+    )
+    
+    with pytest.raises(HTTPException) as exc_info:
+        user_service.update_user("nonexistent", update_data)
+    
+    assert exc_info.value.status_code == 404
+    assert "用户不存在" in str(exc_info.value.detail)
+
+def test_delete_nonexistent_user():
+    """测试删除不存在的用户"""
+    # 清空用户列表
+    user_service.users = []
+    
+    with pytest.raises(HTTPException) as exc_info:
+        user_service.delete_user("nonexistent")
+    
+    assert exc_info.value.status_code == 404
+    assert "用户不存在" in str(exc_info.value.detail)
+
+def test_get_user_by_username_nonexistent():
+    """测试获取不存在的用户信息"""
+    # 清空用户列表
+    user_service.users = []
+    
+    result = user_service.get_user_by_username("nonexistent")
+    assert result is None
+
+def test_update_user_with_empty_update():
+    """测试使用空更新数据更新用户"""
+    # 准备测试数据
+    user_service.users = [
+        user_service.User(
+            username="testuser",
+            password="Password123",
+            email="test@example.com",
+            age=25
+        )
+    ]
+    
+    # 创建一个空的更新数据（所有字段都是None）
+    empty_update = UserUpdate()
+    
+    with patch("service.user_service.save_user_data"):
+        result = user_service.update_user("testuser", empty_update)
+    
+    # 验证结果
+    assert result.success is True
+    assert result.message == "没有提供需要更新的字段"
+    assert result.user.username == "testuser"
+    assert result.user.email == "test@example.com"
+    assert result.user.age == 25
+
+def test_init_user_data_file_not_found():
+    """测试当用户数据文件不存在时初始化用户数据"""
+    with patch("builtins.open", side_effect=FileNotFoundError()):
+        result = user_service.init_user_data()
+        assert result == []
+
+def test_init_user_data_json_decode_error():
+    """测试当用户数据文件包含无效JSON时初始化用户数据"""
+    with patch("builtins.open", mock_open(read_data='invalid json')):
+        with patch("json.load", side_effect=json.JSONDecodeError("Expecting value", "invalid json", 0)):
+            result = user_service.init_user_data()
+            assert result == []
+
+def test_init_user_data_validation_error():
+    """测试当用户数据验证失败时初始化用户数据"""
+    # 模拟一个包含无效用户数据的JSON
+    invalid_data = [
+        {
+            "username": "testuser",
+            "password": "Password123",
+            "email": "invalid-email",  # 无效的邮箱格式
+            "age": 25
+        }
+    ]
+    
+    # 简单模拟一个验证错误
+    class MockValidationError(Exception):
+        pass
+    
+    with patch("builtins.open", mock_open(read_data=json.dumps(invalid_data))):
+        with patch("json.load", return_value=invalid_data):
+            # 使用简单的Mock来模拟验证错误
+            with patch("service.user_service.User", side_effect=MockValidationError("Email validation error")):
+                with patch("service.user_service.ValidationError", MockValidationError):
+                    # 确保打印出错误消息
+                    with patch("builtins.print"):
+                        result = user_service.init_user_data()
+                        assert result == []
+
+def test_get_users_empty_list():
+    """测试当用户列表为空时获取用户"""
+    # 清空用户列表
+    user_service.users = []
+    
+    result = user_service.get_users(0, 10, 0, 100)
+    assert result == []
+
+def test_get_users_offset_exceeds_length():
+    """测试当偏移量超过用户列表长度时获取用户"""
+    # 准备测试数据
+    user_service.users = [
+        user_service.User(
+            username="testuser1",
+            password="Password123",
+            email="test1@example.com",
+            age=25
+        )
+    ]
+    
+    # 偏移量为1，而列表只有1个元素
+    result = user_service.get_users(1, 10, 0, 100)
+    assert result == [] 

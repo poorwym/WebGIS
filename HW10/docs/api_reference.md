@@ -40,7 +40,8 @@ http://localhost:8000
 ```json
 {
   "success": true,
-  "message": "用户注册成功"
+  "message": "用户创建成功",
+  "status_code": 201
 }
 ```
 
@@ -131,7 +132,12 @@ http://localhost:8000
 ```json
 {
   "success": true,
-  "message": "用户更新成功"
+  "message": "用户更新成功",
+  "user": {
+    "username": "用户名",
+    "email": "新邮箱@example.com",
+    "age": 26
+  }
 }
 ```
 
@@ -150,7 +156,8 @@ http://localhost:8000
 ```json
 {
   "success": true,
-  "message": "用户删除成功"
+  "message": "用户删除成功",
+  "status_code": 200
 }
 ```
 

@@ -1,11 +1,11 @@
 from fastapi import APIRouter, HTTPException, Query
 import service.user_service as user_service
-from schemas.user import UserCreate, UserUpdate, UserResponse
+from schemas.user import UserCreate, UserUpdate, UserResponse, SuccessResponse, UpdateResponse
 from typing import List
 
 router = APIRouter(prefix="/users", tags=["users"])
 
-@router.post("/", status_code=201, response_model=dict)
+@router.post("/", status_code=201, response_model=SuccessResponse)
 def register_user(user: UserCreate):
     return user_service.register_user(user)
 
@@ -27,11 +27,11 @@ def get_user_by_username(username: str):
         raise HTTPException(status_code=404, detail="用户不存在")
     return user
 
-@router.put("/{username}", response_model=dict)
+@router.put("/{username}", response_model=UpdateResponse)
 def update_user(username: str, user_update: UserUpdate):
     return user_service.update_user(username, user_update)
 
-@router.delete("/{username}", response_model=dict)
+@router.delete("/{username}", response_model=SuccessResponse)
 def delete_user(username: str):
     return user_service.delete_user(username)
 

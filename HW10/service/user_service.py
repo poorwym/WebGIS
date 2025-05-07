@@ -1,7 +1,7 @@
 import json
 import os
 from typing import List, Optional
-from schemas.user import User, UserCreate, UserUpdate, UserResponse
+from schemas.user import User, UserCreate, UserUpdate, UserResponse, SuccessResponse, UpdateResponse
 from fastapi import HTTPException
 from pydantic import ValidationError
 
@@ -43,7 +43,7 @@ def get_users(
     filtered_users = [user for user in users if min_age <= user.age <= max_age]
     return [UserResponse(**user.model_dump()) for user in filtered_users[offset:offset+limit]]
 
-def register_user(user_data: UserCreate) -> dict:
+def register_user(user_data: UserCreate) -> SuccessResponse:
     try:
         existing_user = next((u for u in users if u.username == user_data.username), None)
         if existing_user is not None:
@@ -53,7 +53,7 @@ def register_user(user_data: UserCreate) -> dict:
         user = User(**user_data.model_dump())
         users.append(user)
         save_user_data()
-        return {"status_code": 201, "detail": "用户创建成功"}
+        return SuccessResponse(success=True, message="用户创建成功", status_code=201)
     except ValueError as e:
         # 捕获Pydantic字段验证器中的ValueError
         raise HTTPException(status_code=422, detail=str(e))
@@ -61,7 +61,7 @@ def register_user(user_data: UserCreate) -> dict:
         # 简化处理验证错误
         raise HTTPException(status_code=422, detail=str(e))
 
-def update_user(username: str, user_update: UserUpdate) -> dict:
+def update_user(username: str, user_update: UserUpdate) -> UpdateResponse:
     try:
         user = next((u for u in users if u.username == username), None)
         if user is None:
@@ -70,7 +70,11 @@ def update_user(username: str, user_update: UserUpdate) -> dict:
         # 只更新提供的字段
         update_data = user_update.model_dump(exclude_unset=True)
         if not update_data:
-            return {"message": "没有提供需要更新的字段", "user": UserResponse(**user.model_dump())}
+            return UpdateResponse(
+                success=True, 
+                message="没有提供需要更新的字段", 
+                user=UserResponse(**user.model_dump())
+            )
         
         for field, value in update_data.items():
             if value is not None:  # 只更新非空值
@@ -78,7 +82,11 @@ def update_user(username: str, user_update: UserUpdate) -> dict:
         
         save_user_data()
         
-        return {"message": "用户更新成功", "user": UserResponse(**user.model_dump())}
+        return UpdateResponse(
+            success=True, 
+            message="用户更新成功", 
+            user=UserResponse(**user.model_dump())
+        )
     except ValueError as e:
         # 捕获Pydantic字段验证器中的ValueError
         raise HTTPException(status_code=422, detail=str(e))
@@ -86,7 +94,7 @@ def update_user(username: str, user_update: UserUpdate) -> dict:
         # 简化处理验证错误
         raise HTTPException(status_code=422, detail=str(e))
 
-def delete_user(username: str) -> dict:
+def delete_user(username: str) -> SuccessResponse:
     user = next((u for u in users if u.username == username), None)
     if user is None:
         raise HTTPException(status_code=404, detail="用户不存在")
@@ -94,4 +102,8 @@ def delete_user(username: str) -> dict:
     users.remove(user)
     save_user_data()
     
-    return {"message": "用户删除成功"}
+    return SuccessResponse(
+        success=True, 
+        message="用户删除成功", 
+        status_code=200
+    )
