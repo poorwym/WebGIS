@@ -1,4 +1,4 @@
-node_modules
+node_modules/
 
 .env
 
@@ -22,3 +22,14 @@ node_modules
 *.tar
 
 cesiumApp/
+
+__pycache__/
+
+*.pyc
+
+*.pyo
+
+*.pyd
+
+*.pyw
+
