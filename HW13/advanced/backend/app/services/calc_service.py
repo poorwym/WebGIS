@@ -10,7 +10,9 @@ from shapely.geometry import Point
 
 # 读取CSV文件为普通DataFrame
 def calc_min_max_score(request: CalcRequest) -> CalcResponse:
-    residential_df = pd.read_csv(request.house_price_file_name)
+    print("edu poi path:", request.edu_poi_file_path)
+    print("house price path:", request.house_price_file_path)
+    residential_df = pd.read_csv(request.house_price_file_path)
     #print(residential_df.head())
 
     # 将DataFrame转换为GeoDataFrame
@@ -21,7 +23,7 @@ def calc_min_max_score(request: CalcRequest) -> CalcResponse:
     residential_gdf.crs = "EPSG:4326"
     residential_gdf.to_crs("EPSG:3857", inplace=True)
     # 读取GeoJSON文件
-    edu_gdf = gpd.read_file(request.edu_poi_file_name)
+    edu_gdf = gpd.read_file(request.edu_poi_file_path)
 
     # 设置坐标参考系统为WGS84
     edu_gdf.crs = "EPSG:4326"
@@ -66,6 +68,7 @@ def calc_min_max_score(request: CalcRequest) -> CalcResponse:
     residential_gdf["score"] = residential_gdf["count_primary_school_normalized"] + residential_gdf["count_middle_school_normalized"]
 
     result = residential_gdf.sort_values(by="score", ascending=False)
+    result = result.to_crs("EPSG:4326")
     print(result.head())
 
     points : List[point] = [point(lon = geometry.x, lat = geometry.y, min_max_score=score) for geometry, score in zip(result.geometry, result.score)]
